@@ -1,5 +1,5 @@
-import { Nickname } from '@/app/nickname';
+import { Terminal } from '@/app/terminal';
 
 export default function Home() {
-  return <Nickname />;
+  return <Terminal />;
 }
