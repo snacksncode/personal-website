@@ -62,7 +62,7 @@ export function Terminal() {
 
         <p className="text-muted">
           <span className="select-none">$ </span>
-          <span className="cursor-blink">█</span>
+          <span className="cursor-blink text-[12px]">█</span>
         </p>
       </div>
     </main>
