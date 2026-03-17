@@ -7,6 +7,5 @@
   "bracketSpacing": true,
   "arrowParens": "always",
   "plugins": ["prettier-plugin-tailwindcss"],
-  "tailwindConfig": "./tailwind.config.js",
-  "tailwindFunctions": ["clsx", "cva", "cn"]
+  "tailwindStylesheet": "./src/app/globals.css"
 }
