@@ -10,15 +10,16 @@ import {
   type Node,
 } from '@xyflow/react';
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { flowUi } from './offer-styles';
 
 type FlowData = { label: ReactNode };
 
 function nodeLabel(kicker: string, title: string, detail?: string) {
   return (
-    <div className="flow-node-content">
-      <span>{kicker}</span>
-      <strong>{title}</strong>
-      {detail ? <small>{detail}</small> : null}
+    <div className={flowUi.nodeContent}>
+      <span className={flowUi.nodeKicker}>{kicker}</span>
+      <strong className={flowUi.nodeTitle}>{title}</strong>
+      {detail ? <small className={flowUi.nodeDetail}>{detail}</small> : null}
     </div>
   );
 }
@@ -67,11 +68,11 @@ const desktopNodes: Node<FlowData>[] = [
 ];
 
 const mobileNodes: Node<FlowData>[] = [
-  { ...desktopNodes[0], position: { x: 84, y: 0 } },
-  { ...desktopNodes[1], position: { x: 84, y: 145 } },
-  { ...desktopNodes[2], position: { x: 84, y: 290 } },
-  { ...desktopNodes[3], position: { x: 0, y: 485 } },
-  { ...desktopNodes[4], position: { x: 168, y: 485 } },
+  { ...desktopNodes[0], position: { x: 80, y: 0 } },
+  { ...desktopNodes[1], position: { x: 80, y: 105 } },
+  { ...desktopNodes[2], position: { x: 80, y: 210 } },
+  { ...desktopNodes[3], position: { x: 0, y: 350 } },
+  { ...desktopNodes[4], position: { x: 160, y: 350 } },
 ].map((node) => ({
   ...node,
   sourcePosition: Position.Bottom,
@@ -114,7 +115,7 @@ export function DecisionFlow() {
 
   return (
     <div
-      className="decision-flow"
+      className={flowUi.container}
       aria-label="Proces podejmowania decyzji o wdrożeniu"
       ref={containerRef}
     >
@@ -125,7 +126,7 @@ export function DecisionFlow() {
         defaultEdgeOptions={edgeDefaults}
         colorMode="dark"
         fitView
-        fitViewOptions={{ padding: isMobile ? 0.08 : 0.12 }}
+        fitViewOptions={{ padding: isMobile ? 0.06 : 0.12 }}
         minZoom={0.1}
         maxZoom={1.5}
         nodesDraggable={false}
@@ -145,7 +146,7 @@ export function DecisionFlow() {
           variant={BackgroundVariant.Lines}
         />
       </ReactFlow>
-      <p className="flow-caption">Jedna diagnoza. Dwie uczciwe odpowiedzi.</p>
+      <p className={flowUi.caption}>Jedna diagnoza. Dwie uczciwe odpowiedzi.</p>
     </div>
   );
 }
