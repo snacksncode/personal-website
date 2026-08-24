@@ -1,5 +1,5 @@
 const sectionBase =
-  'relative px-[var(--page-pad)] py-[var(--section-gap)] max-[760px]:py-20 [&>*]:mx-auto [&>*]:w-full [&>*]:max-w-[1600px]';
+  'relative px-[var(--page-pad)] py-[var(--section-gap)] max-[760px]:py-16 [&>*]:mx-auto [&>*]:w-full [&>*]:max-w-[1600px]';
 
 const displayHeading =
   'm-0 [font-family:var(--display)] font-[790] tracking-[-0.04em] leading-[0.98]';
@@ -56,8 +56,6 @@ export const ui = {
     'min-h-11 cursor-pointer rounded-none border border-current bg-transparent px-3 py-2 font-[750]',
   contactButtonLight: 'text-[var(--ink)] hover:bg-[var(--ink)] hover:text-[var(--surface)]',
   contactButtonDark: 'text-[var(--surface)] hover:bg-[var(--surface)] hover:text-[var(--ink)]',
-  copyStatus: 'copy-status basis-full empty:hidden',
-
   sectionPaper: `${sectionBase} bg-[var(--paper)]`,
   sectionCobalt: `${sectionBase} bg-[var(--accent-3)] text-[var(--surface)]`,
   sectionHeading:
@@ -68,14 +66,14 @@ export const ui = {
     'm-0 max-w-xl text-[clamp(1rem,1.25vw,1.2rem)] leading-[1.6] text-[var(--surface)]',
 
   problemGrid:
-    'grid grid-cols-4 border-l border-t border-[var(--line)] max-[1100px]:grid-cols-2 max-[760px]:grid-cols-1',
+    'grid grid-cols-3 border-l border-t border-[var(--line)] max-[1100px]:grid-cols-2 max-[760px]:grid-cols-1',
   problemCard:
-    'relative min-h-[23rem] border-b border-r border-[var(--line)] bg-[var(--surface)] p-[clamp(1.35rem,2.2vw,2.3rem)] max-[760px]:min-h-[19rem]',
+    'relative min-h-[23rem] border-b border-r border-[var(--line)] bg-[var(--surface)] p-[clamp(1.35rem,2.2vw,2.3rem)] max-[760px]:min-h-0',
   problemIndex: '[font-family:var(--utility)] text-[0.72rem]',
   problemSignal:
     'absolute right-5 top-5 max-w-36 border border-[var(--line)] px-2 py-[0.35rem] text-right [font-family:var(--utility)] text-[0.55rem] tracking-[0.06em] uppercase text-[var(--muted)]',
   problemTitle:
-    'mb-4 mt-32 max-w-[12ch] text-[clamp(1.55rem,2.1vw,2.2rem)] leading-[1.03] tracking-[-0.04em] max-[760px]:mt-[6.5rem] max-[760px]:text-[1.8rem]',
+    'mb-4 mt-32 max-w-[12ch] text-[clamp(1.55rem,2.1vw,2.2rem)] leading-[1.03] tracking-[-0.04em] max-[760px]:mt-16 max-[760px]:text-[1.55rem]',
   problemCopy: 'm-0 text-[0.95rem] leading-[1.55] text-[var(--muted)]',
   bridge:
     'mt-8 grid rotate-[-0.45deg] grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)_auto] items-center gap-8 bg-[var(--accent-2)] p-[clamp(1.35rem,2.5vw,2.2rem)] [&>svg]:aspect-square [&>svg]:w-[1.1rem] [&>svg]:shrink-0 max-[760px]:grid-cols-[1fr_auto] max-[760px]:gap-4',
@@ -123,13 +121,29 @@ export const ui = {
   conversionTitle:
     'm-0 max-w-[14ch] text-[clamp(2rem,4vw,4.4rem)] leading-[0.98] tracking-[-0.04em]',
   conversionCopy: 'mb-8 mt-6 max-w-[48ch] text-[clamp(1rem,1.2vw,1.16rem)] leading-[1.55]',
+  directWorkNote:
+    'mt-6 max-w-[52ch] border-t border-[color-mix(in_srgb,var(--ink)_28%,transparent)] pt-4 [font-family:var(--utility)] text-[0.68rem] leading-[1.55]',
 
+  buildPackage:
+    'mb-8 grid grid-cols-[minmax(0,1.18fr)_minmax(22rem,0.82fr)] border border-[var(--ink)] bg-[var(--ink)] text-[var(--surface)] shadow-[14px_14px_0_var(--accent-2)] max-[900px]:grid-cols-1 max-[760px]:shadow-[8px_8px_0_var(--accent-2)]',
+  buildPackagePitch:
+    'flex flex-col items-start p-[clamp(2rem,4vw,4.5rem)] max-[900px]:border-b max-[900px]:border-white/20',
+  buildPackageTitle:
+    'mb-6 mt-[clamp(3rem,6vw,6rem)] max-w-[12ch] text-[clamp(2.5rem,5.5vw,6rem)] font-[790] leading-[0.91] tracking-[-0.05em] max-[760px]:mt-12 max-[760px]:text-[clamp(2.7rem,13vw,4.2rem)]',
+  buildPackageCopy:
+    'mb-8 max-w-[48rem] text-[clamp(1rem,1.25vw,1.18rem)] leading-[1.6] text-[color-mix(in_srgb,var(--surface)_76%,transparent)]',
+  buildPackageScope: 'bg-[var(--accent-2)] p-[clamp(2rem,3.5vw,3.8rem)] text-[var(--ink)]',
+  buildPackageList: 'mt-[clamp(3rem,6vw,6rem)] list-none p-0 max-[760px]:mt-10',
+  buildPackageItem:
+    'grid grid-cols-[2.3rem_1fr] gap-4 border-t border-[color-mix(in_srgb,var(--ink)_35%,transparent)] py-5 text-[clamp(1rem,1.3vw,1.2rem)] font-[680] leading-[1.35] [&>span]:[font-family:var(--utility)] [&>span]:text-[0.62rem] [&>span]:font-normal',
+  buildExamplesHeading:
+    'mb-4 mt-[clamp(4rem,7vw,7rem)] flex items-end justify-between gap-8 [&>p:last-child]:max-w-sm [&>p:last-child]:text-right [&>p:last-child]:text-[0.9rem] [&>p:last-child]:text-[var(--muted)] max-[760px]:items-start max-[760px]:[&>p:last-child]:text-left',
   buildGrid: 'grid grid-cols-3 border-l border-t border-[var(--line)] max-[760px]:grid-cols-1',
   buildCard:
-    'min-h-80 border-b border-r border-[var(--line)] bg-[var(--surface)] p-[clamp(1.5rem,2.8vw,2.8rem)] max-[760px]:min-h-68',
+    'min-h-80 border-b border-r border-[var(--line)] bg-[var(--surface)] p-[clamp(1.5rem,2.8vw,2.8rem)] max-[760px]:min-h-0',
   buildIndex: '[font-family:var(--utility)] text-[0.65rem]',
   buildTitle:
-    'mb-4 mt-20 max-w-[13ch] text-[clamp(1.6rem,2.25vw,2.35rem)] leading-[1.05] tracking-[-0.04em] max-[760px]:mt-16',
+    'mb-4 mt-20 max-w-[13ch] text-[clamp(1.6rem,2.25vw,2.35rem)] leading-[1.05] tracking-[-0.04em] max-[760px]:mt-8',
   buildCopy: 'm-0 max-w-96 leading-[1.55] text-[var(--muted)]',
   buildNote:
     'mt-6 grid grid-cols-[0.8fr_1.2fr] items-center gap-12 border border-[var(--ink)] bg-[var(--accent)] p-[clamp(1.4rem,2.5vw,2.3rem)] max-[760px]:grid-cols-1 max-[760px]:gap-4',
@@ -140,29 +154,17 @@ export const ui = {
   casesGrid: 'grid grid-cols-2 gap-6 max-[760px]:grid-cols-1',
   caseWrapFeatured: 'col-span-full max-[760px]:col-auto',
   caseCard: 'relative flex flex-col border border-[var(--line)] p-[clamp(1.5rem,3.2vw,3.2rem)]',
-  caseCardRegular: 'min-h-[26rem] bg-[var(--surface)] max-[760px]:min-h-96',
-  caseCardFeatured: 'min-h-[33rem] bg-[var(--ink)] text-[var(--surface)] max-[760px]:min-h-96',
+  caseCardRegular: 'min-h-[22rem] bg-[var(--surface)] max-[760px]:min-h-72',
+  caseCardFeatured: 'min-h-[26rem] bg-[var(--ink)] text-[var(--surface)] max-[760px]:min-h-80',
   caseTopline:
     'flex items-center justify-between [font-family:var(--utility)] text-[0.66rem] tracking-[0.09em] uppercase [&>svg]:aspect-square [&>svg]:w-[1.15rem]',
   caseTitle:
-    'mb-4 mt-auto text-[clamp(2.7rem,6vw,6rem)] leading-[0.9] tracking-[-0.04em] max-[760px]:text-[3.4rem]',
+    'mb-4 mt-auto text-[clamp(2.7rem,6vw,6rem)] leading-[0.9] tracking-[-0.04em] max-[760px]:text-[3rem]',
   caseCopy: 'm-0 max-w-[47rem] text-[clamp(0.95rem,1.25vw,1.18rem)] leading-[1.55]',
   caseCopyRegular: 'text-[var(--muted)]',
   caseCopyFeatured: 'text-[color-mix(in_srgb,var(--surface)_72%,transparent)]',
-  metricsGrid: 'mt-8 grid grid-cols-4 gap-[0.6rem] max-[760px]:grid-cols-2',
-  metric:
-    'border border-white/25 p-[0.8rem] [font-family:var(--utility)] text-[0.7rem] text-[var(--accent)]',
   caseLink:
     'mt-6 [font-family:var(--utility)] text-[0.68rem] font-bold underline underline-offset-[0.3rem]',
-
-  closing:
-    'relative grid grid-cols-[minmax(0,1.3fr)_minmax(19rem,0.7fr)] items-end gap-[clamp(3rem,7vw,9rem)] bg-[var(--accent-2)] px-[var(--page-pad)] py-[var(--section-gap)] max-[760px]:grid-cols-1 max-[760px]:py-20',
-  closingTitle: `${displayHeading} max-w-[15ch] text-[clamp(2.6rem,5.2vw,6rem)] max-[760px]:text-[clamp(2.7rem,13vw,4.2rem)]`,
-  closingCopy: 'my-8 max-w-[42rem] text-[clamp(1rem,1.3vw,1.2rem)] leading-[1.6]',
-  availability: 'border-t border-[color-mix(in_srgb,var(--ink)_35%,transparent)] pt-5',
-  availabilityCopy: 'mb-5 text-[0.92rem] leading-[1.55]',
-  statusDot:
-    'mb-5 block aspect-square w-[0.65rem] rounded-full bg-[var(--ink)] shadow-[0_0_0_0.28rem_color-mix(in_srgb,var(--ink)_16%,transparent)]',
 
   footer:
     'grid min-h-36 grid-cols-[1fr_auto_auto] items-center gap-12 bg-[var(--ink)] px-[var(--page-pad)] py-8 text-[var(--surface)] max-[760px]:grid-cols-[1fr_auto] max-[760px]:gap-8',

@@ -2,6 +2,7 @@
 
 import { motion, MotionConfig, useReducedMotion } from 'motion/react';
 import { type ReactNode, useState } from 'react';
+import { useCopyToClipboard } from '../hooks/use-copy-to-clipboard';
 import { DecisionFlow } from './flow-diagram';
 import { ui } from './offer-styles';
 
@@ -37,12 +38,6 @@ const problems = [
     signal: 'czas znika',
     title: 'Zespół przepisuje te same dane',
     description: 'Informacje wędrują między formularzem, arkuszem, CRM-em i systemem księgowym.',
-  },
-  {
-    signal: 'narzędzie przeszkadza',
-    title: 'Gotowy system nie pasuje do firmy',
-    description:
-      'Sklep, CRM lub wtyczki wymuszają proces, zamiast wspierać sposób, w jaki zarabiacie.',
   },
 ];
 
@@ -91,18 +86,19 @@ const buildOptions = [
   },
 ];
 
+const fullBuildIncludes = [
+  'zakres, architektura i plan etapów',
+  'kluczowe ścieżki oraz interfejs produktu',
+  'frontend, backend, płatności i integracje',
+  'wdrożenie, analityka i stabilizacja po starcie',
+];
+
 const cases = [
   {
     name: 'Better Off',
     type: 'Platforma społecznościowa',
-    description: 'Upraszczam kluczowe ścieżki produktu i mierzę ich efekt po wdrożeniu.',
+    description: 'Rozwijam webową część działającej platformy społecznościowej.',
     href: 'https://betteroffsocial.com',
-    metrics: [
-      '+19% ukończeń quizu',
-      '+7% konwersji',
-      '-800 ms LCP',
-      '90% kluczowych ścieżek objętych testami E2E',
-    ],
   },
   {
     name: 'Fenne',
@@ -111,10 +107,9 @@ const cases = [
     href: 'https://fenneplanner.com',
   },
   {
-    name: 'Ranga × Warido',
+    name: 'Ranga',
     type: 'Firma usługowa',
-    description:
-      'Uporządkowałem złożoną ofertę księgową i poprowadziłem klienta do właściwego kontaktu.',
+    description: 'Uporządkowałem ofertę księgową i kontakt z klientem.',
     href: 'https://www.ranga.net.pl',
   },
 ];
@@ -138,28 +133,14 @@ function ExternalArrow() {
 }
 
 function ContactFallback({ tone = 'light' }: { tone?: 'light' | 'dark' }) {
-  const [copyStatus, setCopyStatus] = useState<'idle' | 'copied' | 'error'>('idle');
+  const [copiedText, copyToClipboard] = useCopyToClipboard();
+  const [copyFailed, setCopyFailed] = useState(false);
+  const copyStatus = copiedText === EMAIL_ADDRESS ? 'copied' : copyFailed ? 'error' : 'idle';
 
   async function copyEmail() {
-    try {
-      if (navigator.clipboard?.writeText) {
-        await navigator.clipboard.writeText(EMAIL_ADDRESS);
-      } else {
-        const copyField = document.createElement('textarea');
-        copyField.value = EMAIL_ADDRESS;
-        copyField.setAttribute('readonly', '');
-        copyField.style.position = 'fixed';
-        copyField.style.opacity = '0';
-        document.body.appendChild(copyField);
-        copyField.select();
-        const copied = document.execCommand('copy');
-        copyField.remove();
-        if (!copied) throw new Error('Copy failed');
-      }
-      setCopyStatus('copied');
-    } catch {
-      setCopyStatus('error');
-    }
+    setCopyFailed(false);
+    const copied = await copyToClipboard(EMAIL_ADDRESS);
+    setCopyFailed(!copied);
   }
 
   return (
@@ -174,16 +155,14 @@ function ContactFallback({ tone = 'light' }: { tone?: 'light' | 'dark' }) {
         className={`${ui.contactButton} ${tone === 'dark' ? ui.contactButtonDark : ui.contactButtonLight}`}
         type="button"
         onClick={copyEmail}
+        aria-live="polite"
       >
-        {copyStatus === 'copied' ? 'Skopiowano' : 'Kopiuj e-mail'}
-      </button>
-      <span className={ui.copyStatus} aria-live="polite">
         {copyStatus === 'copied'
-          ? 'Adres e-mail skopiowany.'
+          ? 'Skopiowano'
           : copyStatus === 'error'
-            ? `Nie udało się skopiować. Zaznacz adres ${EMAIL_ADDRESS}.`
-            : ''}
-      </span>
+            ? 'Nie udało się'
+            : 'Kopiuj e-mail'}
+      </button>
     </div>
   );
 }
@@ -219,11 +198,11 @@ function Header() {
         <span>Ilya Dolotov</span>
       </a>
       <nav className={ui.nav} aria-label="Główna nawigacja">
-        <a className={ui.navLink} href="#problemy">
-          Dla kogo
-        </a>
         <a className={ui.navLink} href="#sprint">
           Pierwszy krok
+        </a>
+        <a className={ui.navLink} href="#wdrozenie">
+          Pełne wdrożenie
         </a>
         <a className={ui.navLink} href="#realizacje">
           Realizacje
@@ -399,11 +378,11 @@ function SprintSection() {
       </div>
       <Reveal className={ui.conversion}>
         <div className={ui.conversionProof}>
-          <p className={ui.conversionProofLabel}>W działającym produkcie</p>
-          <strong className={ui.conversionMetric}>+7% konwersji</strong>
-          <strong className={ui.conversionMetric}>+19% ukończeń quizu</strong>
+          <p className={ui.conversionProofLabel}>Dowiezione w praktyce</p>
+          <strong className={ui.conversionMetric}>Produkt w App Store</strong>
+          <strong className={ui.conversionMetric}>Platforma na produkcji</strong>
           <span className={ui.conversionProofNote}>
-            Better Off — wyniki po wdrożeniu zmian produktowych.
+            Fenne jest w App Store. Better Off działa na produkcji.
           </span>
         </div>
         <div className={ui.conversionAction}>
@@ -422,6 +401,9 @@ function SprintSection() {
             <ArrowIcon />
           </motion.a>
           <ContactFallback />
+          <p className={ui.directWorkNote}>
+            Pracujesz bezpośrednio ze mną — od pierwszej rozmowy po decyzję i wdrożenie.
+          </p>
         </div>
       </Reveal>
     </section>
@@ -433,14 +415,49 @@ function BuildSection() {
     <section className={ui.sectionPaper} id="wdrozenie">
       <Reveal className={ui.sectionHeading}>
         <div>
-          <p className={ui.eyebrow}>Jeśli odpowiedź brzmi „budujemy”</p>
-          <h2 className={ui.sectionTitle}>Mogę też dowieźć rozwiązanie.</h2>
+          <p className={ui.eyebrow}>Pełne wdrożenie</p>
+          <h2 className={ui.sectionTitle}>Od decyzji do działającego produktu.</h2>
         </div>
         <p className={ui.sectionIntro}>
-          Sprint jest osobną usługą. Potem możesz wdrożyć plan ze mną, z własnym zespołem albo z
-          innym wykonawcą. Jeśli problem pasuje do moich kompetencji, biorę odpowiedzialność od
-          zakresu do działającej wersji.
+          Jeśli sprint pokaże, że budowa ma sens, mogę przejąć całość: od technicznego planu po
+          uruchomienie. Dostajesz jednego partnera odpowiedzialnego za działający efekt, nie paczkę
+          ekranów i repozytorium bez właściciela.
         </p>
+      </Reveal>
+      <Reveal className={ui.buildPackage}>
+        <div className={ui.buildPackagePitch}>
+          <p className={ui.utilityLabel}>Custom build · web lub mobile</p>
+          <h3 className={ui.buildPackageTitle}>Buduję cały produkt. Nie tylko pierwszy ekran.</h3>
+          <p className={ui.buildPackageCopy}>
+            Cenę, etapy i termin ustalamy po sprincie, kiedy znamy prawdziwy zakres i ryzyka. Każdy
+            etap kończy się czymś, co można uruchomić, sprawdzić i świadomie rozwijać dalej.
+          </p>
+          <motion.a
+            className={`${ui.primaryCtaBase} ${ui.primaryCtaLime}`}
+            href={EMAIL_LINK}
+            whileHover={{ y: -3 }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ type: 'spring', stiffness: 420, damping: 30 }}
+          >
+            Zapytaj o pełne wdrożenie
+            <ArrowIcon />
+          </motion.a>
+        </div>
+        <div className={ui.buildPackageScope}>
+          <p className={ui.utilityLabel}>W pakiecie</p>
+          <ul className={ui.buildPackageList}>
+            {fullBuildIncludes.map((item, index) => (
+              <li className={ui.buildPackageItem} key={item}>
+                <span>0{index + 1}</span>
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </Reveal>
+      <Reveal className={ui.buildExamplesHeading}>
+        <p className={ui.utilityLabel}>Przykładowe rozwiązania</p>
+        <p>Technologia wynika z procesu, nie odwrotnie.</p>
       </Reveal>
       <div className={ui.buildGrid}>
         {buildOptions.map((option, index) => (
@@ -452,12 +469,10 @@ function BuildSection() {
         ))}
       </div>
       <Reveal className={ui.buildNote}>
-        <strong className={ui.buildNoteStrong}>
-          Dedykowany system tylko wtedy, kiedy daje przewagę.
-        </strong>
+        <strong className={ui.buildNoteStrong}>Pełne wdrożenie, ale bez pompowania zakresu.</strong>
         <span className={ui.buildNoteCopy}>
-          Nie wciskam WordPressa tam, gdzie firma potrzebuje własnego procesu. Rozwiązanie szyję na
-          miarę dopiero wtedy, gdy gotowe narzędzie nie wystarcza.
+          Najpierw uruchamiamy najmniejszą wersję, która rozwiązuje kosztowny problem. Kolejne
+          elementy dokładamy dopiero wtedy, gdy produkt udowodni ich sens.
         </span>
       </Reveal>
     </section>
@@ -503,51 +518,10 @@ function CasesSection() {
               >
                 {project.description}
               </p>
-              {project.metrics ? (
-                <div className={ui.metricsGrid}>
-                  {project.metrics.map((metric) => (
-                    <span className={ui.metric} key={metric}>
-                      {metric}
-                    </span>
-                  ))}
-                </div>
-              ) : null}
               <span className={ui.caseLink}>{new URL(project.href).hostname}</span>
             </motion.a>
           </Reveal>
         ))}
-      </div>
-    </section>
-  );
-}
-
-function ClosingSection() {
-  return (
-    <section className={ui.closing}>
-      <Reveal className="closing-copy">
-        <p className={ui.eyebrow}>Bez briefu. Bez listy funkcji.</p>
-        <h2 className={ui.closingTitle}>Napisz, gdzie dziś ginie czas.</h2>
-        <p className={ui.closingCopy}>
-          W pierwszej wiadomości wystarczą trzy zdania: co robicie ręcznie, kto na to czeka i jak
-          często problem wraca. Odpowiem, czy widzę sens w dalszej rozmowie.
-        </p>
-        <motion.a
-          className={`${ui.primaryCtaBase} ${ui.primaryCtaDark}`}
-          href={EMAIL_LINK}
-          whileHover={{ y: -3 }}
-          whileTap={{ scale: 0.98 }}
-          transition={{ type: 'spring', stiffness: 420, damping: 30 }}
-        >
-          Napisz trzy zdania
-          <ArrowIcon />
-        </motion.a>
-        <ContactFallback />
-      </Reveal>
-      <div className={ui.availability}>
-        <span className={ui.statusDot} />
-        <p className={ui.availabilityCopy}>
-          Pracujesz bezpośrednio ze mną — od pierwszej rozmowy po decyzje produktowe i wdrożenie.
-        </p>
       </div>
     </section>
   );
@@ -597,7 +571,6 @@ export function OfferPage() {
           <SprintSection />
           <BuildSection />
           <CasesSection />
-          <ClosingSection />
           <Footer />
         </main>
       </div>
