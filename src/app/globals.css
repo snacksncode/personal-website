@@ -473,9 +473,12 @@ a {
   background: var(--accent-3);
   color: var(--surface);
 }
-.sprint-section .eyebrow,
-.sprint-section .price {
+.sprint-section .eyebrow {
   color: var(--accent);
+}
+
+.price-panel .price {
+  color: var(--ink);
 }
 .sprint-section .split-heading > p,
 .sprint-section .process-step p {
