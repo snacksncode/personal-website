@@ -1,5 +1,5 @@
-import { Terminal } from '@/app/terminal';
+import { OfferPage } from '@/app/offer-page';
 
 export default function Home() {
-  return <Terminal />;
+  return <OfferPage />;
 }

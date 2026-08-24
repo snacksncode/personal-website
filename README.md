@@ -1,7 +1,7 @@
 <div align="center">
   <img src="src/app/icon.svg" width="64" height="64" alt="snacksncode logo" />
   <h1><a href="https://snacksncode.dev">snacksncode.dev</a></h1>
-  <p>Personal website. Terminal-style, minimal, placeholder for now.</p>
+  <p>Product-engineering offer by Ilya Dolotov.</p>
 </div>
 
 ---
@@ -11,14 +11,16 @@
 - **Framework** — [Next.js 16](https://nextjs.org)
 - **Language** — [TypeScript 5.9](https://typescriptlang.org)
 - **Styling** — [Tailwind CSS 4.2](https://tailwindcss.com)
-- **Font** — [Geist Mono](https://vercel.com/font)
+- **Motion** — [Motion for React](https://motion.dev/docs/react)
+- **Diagram** — [React Flow](https://reactflow.dev)
+- **Font** — [Geist](https://vercel.com/font)
 - **Runtime** — [Bun](https://bun.sh)
 
 ## Dev
 
 ```bash
 bun install
-bun dev
+bun run dev
 ```
 
 Open [localhost:3000](http://localhost:3000).

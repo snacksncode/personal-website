@@ -13,15 +13,14 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'snacksncode',
-  description: 'developer. maker of things.',
+  title: 'Ilya Dolotov — dedykowane aplikacje dla firm',
+  description:
+    'Buduję aplikacje webowe i mobilne, które usuwają ręczną pracę z procesów działających firm.',
 };
 
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
 };
 
 export default function RootLayout({
@@ -30,10 +29,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} overscroll-none antialiased`}>
-        {children}
-      </body>
+    <html lang="pl">
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>{children}</body>
     </html>
   );
 }
