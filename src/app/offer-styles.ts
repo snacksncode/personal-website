@@ -88,20 +88,17 @@ export const ui = {
     'flex flex-col gap-[clamp(4.5rem,8vw,8rem)] px-[var(--page-pad)] pb-[var(--section-gap)]',
   workReveal: 'w-full',
   workProject:
-    'group grid grid-cols-[minmax(15rem,0.44fr)_minmax(0,1.56fr)] items-center gap-[clamp(2.5rem,6vw,7rem)] text-current no-underline [&>*]:min-w-0 max-[900px]:grid-cols-1 max-[900px]:gap-7',
-  workProjectFeatured: 'grid-cols-[minmax(15rem,0.4fr)_minmax(0,1.6fr)] max-[900px]:grid-cols-1',
-  workProjectReverse: 'min-[901px]:grid-cols-[minmax(0,1.56fr)_minmax(15rem,0.44fr)]',
+    'group flex items-center gap-[clamp(2.5rem,6vw,7rem)] text-current no-underline max-[900px]:flex-col max-[900px]:items-stretch max-[900px]:gap-7',
+  workProjectReverse: 'min-[901px]:flex-row-reverse',
   workBody:
-    'flex flex-col items-start justify-center py-6 max-[900px]:max-w-[42rem] max-[900px]:py-0',
-  workBodyReverse: 'min-[901px]:order-2',
+    'flex w-[clamp(18rem,32vw,30rem)] shrink-0 flex-col items-start justify-center py-6 max-[900px]:w-full max-[900px]:max-w-[42rem] max-[900px]:py-0',
   workType: 'text-xs font-extrabold uppercase tracking-[0.14em] text-[var(--lime)]',
   workName: `${display} mt-5 text-[clamp(3rem,5vw,5.25rem)] font-extrabold leading-[0.92]`,
   workCopy:
     'pretty mt-5 max-w-[36rem] text-[clamp(1rem,1.1vw,1.125rem)] leading-[1.65] text-[var(--muted)]',
   workLink:
     'mt-8 inline-flex min-h-12 items-center gap-4 bg-[var(--lime)] px-5 text-sm font-extrabold text-[var(--ground)] transition-colors group-hover:bg-[var(--orange)] motion-reduce:transition-none',
-  workVisual: 'relative aspect-[16/10] overflow-hidden bg-[var(--field)]',
-  workVisualReverse: 'min-[901px]:order-1',
+  workVisual: 'relative aspect-[16/10] min-w-0 flex-1 overflow-hidden bg-[var(--field)]',
   workImage:
     'object-cover object-top transition-transform duration-500 ease-out group-hover:scale-[1.012] motion-reduce:transition-none motion-reduce:group-hover:scale-100',
 

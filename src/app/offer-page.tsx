@@ -52,7 +52,6 @@ const projects = [
     href: 'https://fenneplanner.com',
     image: '/projects/fenne-home.png',
     imageAlt: 'Strona główna aplikacji Fenne do planowania posiłków.',
-    featured: true,
     reverse: false,
   },
   {
@@ -62,7 +61,6 @@ const projects = [
     href: 'https://betteroffsocial.com',
     image: '/projects/better-off-home.png',
     imageAlt: 'Strona główna platformy społecznościowej Better Off.',
-    featured: false,
     reverse: true,
   },
   {
@@ -72,7 +70,6 @@ const projects = [
     href: 'https://www.ranga.net.pl',
     image: '/projects/ranga-home.png',
     imageAlt: 'Strona główna firmy księgowej i audytorskiej Ranga.',
-    featured: false,
     reverse: false,
   },
 ];
@@ -345,13 +342,13 @@ function WorkSection() {
             key={project.name}
           >
             <a
-              className={`${ui.workProject} ${project.featured ? ui.workProjectFeatured : ''} ${project.reverse ? ui.workProjectReverse : ''}`}
+              className={`${ui.workProject} ${project.reverse ? ui.workProjectReverse : ''}`}
               href={project.href}
               target="_blank"
               rel="noreferrer"
               aria-label={`${project.name}. Otwórz projekt w nowej karcie`}
             >
-              <div className={`${ui.workBody} ${project.reverse ? ui.workBodyReverse : ''}`}>
+              <div className={ui.workBody}>
                 <span className={ui.workType}>{project.type.replace(' · ', ' / ')}</span>
                 <strong className={ui.workName}>{project.name}</strong>
                 <span className={ui.workCopy}>{project.copy}</span>
@@ -360,13 +357,13 @@ function WorkSection() {
                   <ArrowIcon external />
                 </span>
               </div>
-              <div className={`${ui.workVisual} ${project.reverse ? ui.workVisualReverse : ''}`}>
+              <div className={ui.workVisual}>
                 <Image
                   className={ui.workImage}
                   src={project.image}
                   alt={project.imageAlt}
                   fill
-                  sizes="(max-width: 900px) 100vw, 68vw"
+                  sizes="(max-width: 900px) 100vw, 60vw"
                 />
               </div>
             </a>
