@@ -11,9 +11,8 @@
 - **Framework** — [Next.js 16](https://nextjs.org)
 - **Language** — [TypeScript 5.9](https://typescriptlang.org)
 - **Styling** — [Tailwind CSS 4.2](https://tailwindcss.com)
-- **Motion** — [Motion for React](https://motion.dev/docs/react)
-- **Diagram** — [React Flow](https://reactflow.dev)
-- **Font** — [Geist](https://vercel.com/font)
+- **Motion** — [Motion for React](https://motion.dev/docs/react) for the mobile CTA state transition
+- **Fonts** — Geist for body copy and Barlow Condensed for display type
 - **Runtime** — [Bun](https://bun.sh)
 
 ## Dev

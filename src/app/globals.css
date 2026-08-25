@@ -1,38 +1,48 @@
 @import 'tailwindcss';
-@import '@xyflow/react/dist/style.css';
 
 :root {
-  --frame: #101310;
-  --ink: #14231d;
-  --paper: #f5f1e8;
-  --surface: #fffdf8;
-  --muted: #66716c;
-  --accent: #cafa75;
-  --accent-2: #ff715b;
-  --accent-3: #4f64ff;
-  --line: color-mix(in srgb, var(--ink) 19%, transparent);
-  --display: var(--font-geist-sans), Arial, sans-serif;
+  --ground: #0d1f18;
+  --field: #143126;
+  --field-deep: #0a1813;
+  --text: #f2efe6;
+  --muted: #b6c1b9;
+  --lime: #c7f36b;
+  --orange: #ff6848;
+  --line: color-mix(in srgb, var(--text) 24%, transparent);
+  --line-strong: color-mix(in srgb, var(--lime) 58%, transparent);
+  --display: var(--font-barlow-condensed), sans-serif;
   --body: var(--font-geist-sans), Arial, sans-serif;
   --utility: var(--font-geist-mono), monospace;
-  --page-pad: clamp(1.25rem, 4vw, 5rem);
-  --section-gap: clamp(5.5rem, 10vw, 10rem);
+  --page-pad: clamp(1.25rem, 3.5vw, 4.25rem);
+  --section-gap: clamp(5rem, 9vw, 9rem);
 }
 
 html {
   scroll-behavior: smooth;
-  scrollbar-color: var(--accent-3) var(--frame);
+  scrollbar-color: var(--lime) var(--field-deep);
+  background: var(--field-deep);
 }
 
 body {
   margin: 0;
-  background: var(--frame);
-  color: var(--ink);
+  background: var(--field-deep);
+  color: var(--text);
   font-family: var(--body);
+}
+
+body,
+button,
+a {
+  font-synthesis: none;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 a:focus-visible,
 button:focus-visible {
-  outline: 3px solid var(--accent-2);
+  outline: 3px solid var(--orange);
   outline-offset: 4px;
 }
 
@@ -42,86 +52,40 @@ a {
 }
 
 ::selection {
-  background: var(--accent);
-  color: var(--ink);
+  background: var(--lime);
+  color: var(--ground);
 }
 
-/* React Flow owns these nested DOM nodes; the page shell itself is Tailwind-only. */
-.decision-flow .react-flow {
-  background: transparent;
+::-webkit-scrollbar {
+  width: 11px;
 }
 
-.decision-flow .react-flow__node {
-  width: 180px;
-  border: 1px solid var(--surface);
-  border-radius: 0;
-  background: var(--ink);
-  padding: 0;
-  color: var(--surface);
-  box-shadow: none;
-  font-family: var(--body);
-  text-align: left;
+::-webkit-scrollbar-track {
+  background: var(--field-deep);
 }
 
-.decision-flow .react-flow__node.sprint-node {
-  border-color: var(--ink);
-  background: var(--accent-2);
-  color: var(--ink);
+::-webkit-scrollbar-thumb {
+  border: 3px solid var(--field-deep);
+  background: var(--lime);
 }
 
-.decision-flow .react-flow__node.decision-node {
-  border-color: var(--accent);
+.balance {
+  text-wrap: balance;
 }
 
-.decision-flow .react-flow__node.no-build-node {
-  border-color: color-mix(in srgb, var(--surface) 60%, transparent);
-}
-
-.decision-flow .react-flow__node.build-node {
-  border-color: var(--ink);
-  background: var(--accent);
-  color: var(--ink);
-}
-
-.decision-flow .react-flow__edge-path {
-  stroke-linecap: square;
-}
-
-.decision-flow .react-flow__edge.animated path {
-  animation-duration: 1.2s;
-}
-
-.decision-flow .react-flow__attribution {
-  border: 1px solid color-mix(in srgb, var(--surface) 18%, transparent);
-  background: var(--ink);
-  padding: 2px 4px;
-  font-family: var(--utility);
-  font-size: 7px;
-  opacity: 0.65;
-}
-
-@media (max-width: 760px) {
-  .decision-flow .react-flow__node {
-    width: 145px;
-  }
+.pretty {
+  text-wrap: pretty;
 }
 
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
   }
-
-  .decision-flow .react-flow__edge.animated path {
-    animation: none;
-  }
 }
 
 @media print {
   body {
     background: white;
-  }
-
-  .decision-flow .react-flow__edge.animated path {
-    animation: none;
+    color: black;
   }
 }

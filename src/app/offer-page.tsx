@@ -1,13 +1,13 @@
 'use client';
 
-import { motion, MotionConfig, useReducedMotion } from 'motion/react';
-import { type ReactNode, useState } from 'react';
+import { AnimatePresence, motion, useInView, useReducedMotion } from 'motion/react';
+import Image from 'next/image';
+import { type ReactNode, type RefObject, useEffect, useRef, useState } from 'react';
 import { useCopyToClipboard } from '../hooks/use-copy-to-clipboard';
-import { DecisionFlow } from './flow-diagram';
 import { ui } from './offer-styles';
 
-const EMAIL_ADDRESS = 'hello@snacksncode.dev';
-const EMAIL_SUBJECT = 'Gdzie ginie czas w naszej firmie';
+const EMAIL_ADDRESS = 'dolotov@hey.com';
+const EMAIL_SUBJECT = 'Ręczna praca, którą chcemy usprawnić';
 const EMAIL_BODY = `Cześć Ilya,
 
 1. Co robimy ręcznie:
@@ -16,123 +16,143 @@ const EMAIL_BODY = `Cześć Ilya,
 2. Kto na to czeka:
 ...
 
-3. Jak często problem wraca:
+3. Jak często to się powtarza:
 ...
 
 Dodatkowy kontekst:
 ...`;
 const EMAIL_LINK = `mailto:${EMAIL_ADDRESS}?subject=${encodeURIComponent(EMAIL_SUBJECT)}&body=${encodeURIComponent(EMAIL_BODY)}`;
 
-const problems = [
+const buildExamples = [
   {
-    signal: 'sprzedaż zwalnia',
-    title: 'Wyceny i zamówienia krążą po e-mailu',
-    description: 'Każdy przypadek wymaga kilku wiadomości, Excela i ręcznego pilnowania statusu.',
+    title: 'Aplikacja webowa lub mobilna',
+    copy: 'Kluczowa część twojej usługi działa dokładnie tak, jak potrzebuje tego firma i jej klienci.',
   },
   {
-    signal: 'klient czeka',
-    title: 'Klient czeka na prostą odpowiedź',
-    description: 'Cena, termin, status albo dokument zależą od tego, czy ktoś znajdzie chwilę.',
-  },
-  {
-    signal: 'czas znika',
-    title: 'Zespół przepisuje te same dane',
-    description: 'Informacje wędrują między formularzem, arkuszem, CRM-em i systemem księgowym.',
-  },
-];
-
-const sprintSteps = [
-  {
-    number: '01',
-    title: 'Rozbieramy problem',
-    description:
-      'Rozmawiam z osobami w procesie i sprawdzam, gdzie naprawdę uciekają czas i pieniądze.',
-  },
-  {
-    number: '02',
-    title: 'Tniemy zakres',
-    description:
-      'Oddzielamy rozwiązanie potrzebne teraz od funkcji, które mogą spokojnie poczekać.',
-  },
-  {
-    number: '03',
-    title: 'Podejmujesz decyzję',
-    description:
-      'Dostajesz rekomendację, ryzyka, zakres i budżet — także wtedy, gdy nie warto nic budować.',
-  },
-];
-
-const deliverables = [
-  'diagnoza problemu i rekomendacja: budować, kupić czy zmienić proces',
-  'najmniejszy sensowny zakres oraz lista rzeczy, które mogą poczekać',
-  'warianty rozwiązania, ryzyka, orientacyjny budżet i kolejny krok',
-];
-
-const buildOptions = [
-  {
-    title: 'Portal lub konfigurator dla klientów',
-    description:
-      'Wycena, zamówienie, rezerwacja, płatność albo status bez wymiany dziesięciu e-maili.',
+    title: 'Portal, sklep lub konfigurator',
+    copy: 'Klient sam wybiera, zamawia, płaci i sprawdza status bez czekania na odpowiedź obsługi.',
   },
   {
     title: 'Panel dla zespołu',
-    description:
-      'Jedno miejsce do obsługi procesu zamiast arkuszy, kopiowania danych i ręcznych przypomnień.',
-  },
-  {
-    title: 'Produkt webowy lub mobilny',
-    description:
-      'Dedykowana aplikacja, kiedy gotowe narzędzia nie obsługują kluczowej logiki biznesu.',
+    copy: 'Zespół obsługuje klientów, zamówienia i dokumenty w jednym miejscu, bez przekopywania maili i arkuszy.',
   },
 ];
 
-const fullBuildIncludes = [
-  'zakres, architektura i plan etapów',
-  'kluczowe ścieżki oraz interfejs produktu',
-  'frontend, backend, płatności i integracje',
-  'wdrożenie, analityka i stabilizacja po starcie',
+const sprintOutcomes = [
+  'Decyzję: budować własny system, kupić gotowe narzędzie czy zmienić sposób pracy.',
+  'Najmniejszy sensowny zakres, ryzyka i listę rzeczy, które mogą poczekać.',
+  'Plan wdrożenia z orientacyjnym budżetem i jasnym kolejnym krokiem.',
 ];
 
-const cases = [
-  {
-    name: 'Better Off',
-    type: 'Platforma społecznościowa',
-    description: 'Rozwijam webową część działającej platformy społecznościowej.',
-    href: 'https://betteroffsocial.com',
-  },
+const projects = [
   {
     name: 'Fenne',
-    type: 'Własna aplikacja mobilna',
-    description: 'Od pomysłu i decyzji produktowych po działającą aplikację dostępną w App Store.',
+    type: 'Własny produkt · iOS',
+    copy: 'Aplikacja mobilna do planowania posiłków. Zaprojektowana, zbudowana i opublikowana przeze mnie w App Store.',
     href: 'https://fenneplanner.com',
+    image: '/projects/fenne-home.png',
+    imageAlt: 'Strona główna aplikacji Fenne do planowania posiłków.',
+    featured: true,
+    reverse: false,
+  },
+  {
+    name: 'Better Off',
+    type: 'Platforma społecznościowa · web',
+    copy: 'Rozwijam część webową platformy, na której ludzie zapisują się na wydarzenia i poznają nowe osoby.',
+    href: 'https://betteroffsocial.com',
+    image: '/projects/better-off-home.png',
+    imageAlt: 'Strona główna platformy społecznościowej Better Off.',
+    featured: false,
+    reverse: true,
   },
   {
     name: 'Ranga',
-    type: 'Firma usługowa',
-    description: 'Uporządkowałem ofertę księgową i kontakt z klientem.',
+    type: 'Strona usługowa',
+    copy: 'Strona firmy księgowej, która porządkuje ofertę usług i prowadzi klienta prosto do kontaktu.',
     href: 'https://www.ranga.net.pl',
+    image: '/projects/ranga-home.png',
+    imageAlt: 'Strona główna firmy księgowej i audytorskiej Ranga.',
+    featured: false,
+    reverse: false,
   },
 ];
 
-const enterEase = [0.22, 1, 0.36, 1] as const;
+const revealEase = [0.16, 1, 0.3, 1] as const;
 
-function ArrowIcon() {
+type RevealDirection = 'up' | 'left' | 'right';
+
+function ScrollReveal({
+  children,
+  className,
+  direction = 'up',
+  delay = 0,
+  amount = 0.22,
+  crop = false,
+}: {
+  children: ReactNode;
+  className?: string;
+  direction?: RevealDirection;
+  delay?: number;
+  amount?: number;
+  crop?: boolean;
+}) {
+  const reduceMotion = useReducedMotion();
+  const revealRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(revealRef, {
+    once: true,
+    amount,
+    margin: '0px 0px -8% 0px',
+  });
+  const [motionReady, setMotionReady] = useState(false);
+
+  useEffect(() => setMotionReady(true), []);
+
+  const offset =
+    direction === 'left'
+      ? { x: -36, y: 0 }
+      : direction === 'right'
+        ? { x: 36, y: 0 }
+        : { x: 0, y: 28 };
+  const visible = !motionReady || reduceMotion || isInView;
+
   return (
-    <svg viewBox="0 0 20 20" aria-hidden="true">
-      <path d="M4 10h11M11 5l5 5-5 5" fill="none" stroke="currentColor" strokeWidth="1.8" />
+    <motion.div
+      animate={
+        visible
+          ? { opacity: 1, x: 0, y: 0, clipPath: 'inset(0% 0% 0% 0%)' }
+          : {
+              opacity: 0,
+              ...offset,
+              clipPath: crop ? 'inset(0% 0% 16% 0%)' : 'inset(0% 0% 0% 0%)',
+            }
+      }
+      className={className}
+      initial={false}
+      ref={revealRef}
+      transition={{
+        duration: reduceMotion ? 0.01 : 0.64,
+        delay: reduceMotion ? 0 : delay,
+        ease: revealEase,
+      }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+function ArrowIcon({ external = false }: { external?: boolean }) {
+  return (
+    <svg className={ui.arrow} viewBox="0 0 24 24" aria-hidden="true">
+      {external ? (
+        <path d="M7 17 17 7M9 7h8v8" fill="none" stroke="currentColor" strokeWidth="1.7" />
+      ) : (
+        <path d="M4 12h15M14 6l6 6-6 6" fill="none" stroke="currentColor" strokeWidth="1.7" />
+      )}
     </svg>
   );
 }
 
-function ExternalArrow() {
-  return (
-    <svg viewBox="0 0 18 18" aria-hidden="true">
-      <path d="M5 13 13 5M7 5h6v6" fill="none" stroke="currentColor" strokeWidth="1.6" />
-    </svg>
-  );
-}
-
-function ContactFallback({ tone = 'light' }: { tone?: 'light' | 'dark' }) {
+function ContactFallback({ onOrange = false }: { onOrange?: boolean }) {
   const [copiedText, copyToClipboard] = useCopyToClipboard();
   const [copyFailed, setCopyFailed] = useState(false);
   const copyStatus = copiedText === EMAIL_ADDRESS ? 'copied' : copyFailed ? 'error' : 'idle';
@@ -144,385 +164,240 @@ function ContactFallback({ tone = 'light' }: { tone?: 'light' | 'dark' }) {
   }
 
   return (
-    <div
-      className={`${ui.contactFallback} ${tone === 'dark' ? 'text-[var(--surface)]' : 'text-[var(--ink)]'}`}
-    >
-      <span className={ui.contactHint}>Nie otworzyła się poczta?</span>
-      <a className={ui.contactLink} href={EMAIL_LINK}>
+    <div className={onOrange ? ui.contactOnOrange : ui.contact}>
+      <a className={onOrange ? ui.contactLinkOnOrange : ui.contactLink} href={EMAIL_LINK}>
         {EMAIL_ADDRESS}
       </a>
       <button
-        className={`${ui.contactButton} ${tone === 'dark' ? ui.contactButtonDark : ui.contactButtonLight}`}
+        className={onOrange ? ui.copyButtonOnOrange : ui.copyButton}
         type="button"
         onClick={copyEmail}
         aria-live="polite"
       >
         {copyStatus === 'copied'
-          ? 'Skopiowano'
+          ? 'Skopiowano adres'
           : copyStatus === 'error'
-            ? 'Nie udało się'
-            : 'Kopiuj e-mail'}
+            ? 'Zaznacz i skopiuj adres'
+            : 'Kopiuj adres'}
       </button>
     </div>
-  );
-}
-
-function Reveal({
-  children,
-  className = '',
-  delay = 0,
-}: {
-  children: ReactNode;
-  className?: string;
-  delay?: number;
-}) {
-  const reduce = useReducedMotion();
-  return (
-    <motion.div
-      className={className}
-      initial={reduce ? false : { opacity: 0, y: 24 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.16 }}
-      transition={{ duration: 0.55, delay, ease: enterEase }}
-    >
-      {children}
-    </motion.div>
   );
 }
 
 function Header() {
   return (
     <header className={ui.header}>
-      <a className={ui.wordmark} href="#top" aria-label="Ilya Dolotov — początek strony">
-        <span className={ui.wordmarkMark}>ID</span>
-        <span>Ilya Dolotov</span>
+      <a className={ui.wordmark} href="#top" aria-label="Ilya Dolotov, początek strony">
+        <span className={ui.wordmarkName}>Ilya Dolotov</span>
+        <span className={ui.wordmarkRole}>Projektuję i buduję aplikacje dla firm.</span>
       </a>
       <nav className={ui.nav} aria-label="Główna nawigacja">
-        <a className={ui.navLink} href="#sprint">
-          Pierwszy krok
-        </a>
         <a className={ui.navLink} href="#wdrozenie">
           Pełne wdrożenie
+        </a>
+        <a className={ui.navLink} href="#sprint">
+          Sprint 7 dni
         </a>
         <a className={ui.navLink} href="#realizacje">
           Realizacje
         </a>
       </nav>
-      <a className={ui.navCta} href={EMAIL_LINK}>
-        Napisz 3 zdania
-        <ArrowIcon />
-      </a>
     </header>
   );
 }
 
-function Hero() {
-  const reduce = useReducedMotion();
-  const heroItemVariants = {
-    hidden: { opacity: 0, y: 18 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: enterEase } },
-  };
+function Hero({ sectionRef }: { sectionRef: RefObject<HTMLElement | null> }) {
   return (
-    <section className={ui.hero} id="top">
-      <div className={`${ui.heroOrb} ${ui.heroOrbOne}`} aria-hidden="true" />
-      <div className={`${ui.heroOrb} ${ui.heroOrbTwo}`} aria-hidden="true" />
-      <div className={ui.heroLayout}>
-        <motion.div
-          className={ui.heroCopy}
-          initial={reduce ? false : 'hidden'}
-          animate="visible"
-          variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.09 } } }}
-        >
-          <motion.p className={ui.eyebrow} variants={heroItemVariants}>
-            Dedykowane aplikacje dla MŚP w usługach, handlu i produkcji
-          </motion.p>
-          <h1 className={ui.heroTitle}>
-            <motion.span variants={heroItemVariants}>Buduję aplikacje, które usuwają</motion.span>
-            <motion.span className={ui.heroAccent} variants={heroItemVariants}>
-              ręczną robotę.
-            </motion.span>
-          </h1>
-          <motion.p className={ui.heroLead} variants={heroItemVariants}>
-            Masz proces oparty na e-mailu i Excelu, klient czeka albo gotowy system nie pasuje?
-            Najpierw znajduję najmniejszy sensowny zakres. Potem — jeśli warto — buduję rozwiązanie
-            webowe lub mobilne.
-          </motion.p>
-          <motion.div className={ui.heroActions} variants={heroItemVariants}>
-            <motion.a
-              className={`${ui.primaryCtaBase} ${ui.primaryCtaLime}`}
-              href={EMAIL_LINK}
-              whileHover={reduce ? undefined : { y: -3 }}
-              whileTap={reduce ? undefined : { scale: 0.98 }}
-              transition={{ type: 'spring', stiffness: 420, damping: 30 }}
-            >
-              Napisz trzy zdania
-              <ArrowIcon />
-            </motion.a>
-            <a className={ui.textLink} href="#sprint">
-              Jak wygląda pierwszy krok
-            </a>
-          </motion.div>
-          <motion.div variants={heroItemVariants}>
-            <ContactFallback tone="dark" />
-          </motion.div>
-          <motion.div className={ui.heroFacts} variants={heroItemVariants}>
-            <span>
-              <strong>7 dni</strong> do decyzji
-            </span>
-            <span>
-              <strong>9 000 zł</strong> netto
-            </span>
-            <span>
-              <strong>0 presji</strong> na wdrożenie
-            </span>
-          </motion.div>
-        </motion.div>
-        <DecisionFlow />
+    <section className={ui.hero} id="top" ref={sectionRef}>
+      <div>
+        <h1 className={ui.heroTitle}>
+          Aplikacje, które <span className={ui.accent}>przejmują ręczną robotę.</span>
+        </h1>
+        <p className={ui.heroLead}>
+          Jeśli zamówienia, wyceny albo obsługa klientów utknęły między mailem, Excelem i ręcznym
+          pilnowaniem, buduję system, który przejmuje powtarzalne kroki i daje zespołowi jedno
+          miejsce do pracy.
+        </p>
+      </div>
+      <div className={ui.heroAction}>
+        <a className={ui.primaryCta} href={EMAIL_LINK}>
+          Opisz, co robicie ręcznie
+          <ArrowIcon />
+        </a>
+        <p className={ui.actionHint}>
+          Otworzy się gotowy e-mail z trzema pytaniami. Odpowiem, czy warto rozmawiać o własnym
+          systemie.
+        </p>
+        <p className={ui.sprintHint}>Sprint decyzyjny: 7 dni roboczych · 9 000 PLN netto + VAT</p>
+        <ContactFallback />
       </div>
     </section>
   );
 }
 
-function ProblemsSection() {
-  const reduce = useReducedMotion();
+function FullBuildSection() {
   return (
-    <section className={ui.sectionPaper} id="problemy">
-      <Reveal className={ui.sectionHeading}>
-        <div>
-          <p className={ui.eyebrow}>Brzmi znajomo?</p>
-          <h2 className={ui.sectionTitle}>Problem widać w codziennej pracy.</h2>
+    <section className={ui.buildSection} id="wdrozenie" aria-labelledby="build-title">
+      <div className={ui.buildContent}>
+        <ScrollReveal className={ui.buildIntro} crop>
+          <div className={ui.buildHeading}>
+            <p className={ui.eyebrow}>Pełne wdrożenie</p>
+            <h2 className={ui.sectionTitle} id="build-title">
+              <span className={ui.titleLine}>Dostajesz działający system,</span>
+              <span className={ui.titleLine}>nie sam kod.</span>
+            </h2>
+          </div>
+          <p className={ui.sectionLead}>
+            Najpierw ustalamy, co ma usprawnić firma. Potem projektuję sposób działania, buduję
+            całość, podłączam płatności i używane przez firmę narzędzia, a na końcu uruchamiam
+            system i stabilizuję go po starcie.
+          </p>
+          <p className={ui.buildPromise}>
+            <strong>Masz jedną osobę odpowiedzialną za całość.</strong>
+            <span>
+              Rozmawiasz bezpośrednio ze mną od pierwszego spotkania po uruchomienie. Cenę
+              poznajesz, gdy wiemy, co naprawdę trzeba zbudować.
+            </span>
+          </p>
+        </ScrollReveal>
+        <div className={ui.buildList}>
+          {buildExamples.map((item, index) => (
+            <ScrollReveal delay={index * 0.08} key={item.title} amount={0.18}>
+              <article className={ui.buildItem}>
+                <span className={ui.buildItemNumber} aria-hidden="true">
+                  {index + 1}
+                </span>
+                <h3 className={ui.buildItemTitle}>{item.title}</h3>
+                <p className={ui.buildItemCopy}>{item.copy}</p>
+              </article>
+            </ScrollReveal>
+          ))}
         </div>
-        <p className={ui.sectionIntro}>
-          Nie musisz wiedzieć, czy potrzebujesz sklepu, aplikacji czy panelu. Wystarczy wskazać
-          miejsce, w którym firma regularnie traci czas, klientów albo marżę.
-        </p>
-      </Reveal>
-      <div className={ui.problemGrid}>
-        {problems.map((problem, index) => (
-          <Reveal delay={index * 0.045} key={problem.title}>
-            <motion.article
-              className={ui.problemCard}
-              whileHover={reduce ? undefined : { y: -5 }}
-              transition={{ type: 'spring', stiffness: 360, damping: 30 }}
-            >
-              <span className={ui.problemIndex}>0{index + 1}</span>
-              <span className={ui.problemSignal}>{problem.signal}</span>
-              <h3 className={ui.problemTitle}>{problem.title}</h3>
-              <p className={ui.problemCopy}>{problem.description}</p>
-            </motion.article>
-          </Reveal>
-        ))}
       </div>
-      <Reveal className={ui.bridge}>
-        <span className={ui.bridgeLead}>
-          Jeśli któryś z tych sygnałów kosztuje firmę realne pieniądze,
-        </span>
-        <strong className={ui.bridgeStrong}>nie zaczynamy od kodu. Zaczynamy od decyzji.</strong>
-        <ArrowIcon />
-      </Reveal>
     </section>
   );
 }
 
 function SprintSection() {
   return (
-    <section className={ui.sectionCobalt} id="sprint">
-      <Reveal className={ui.sectionHeading}>
-        <div>
-          <p className={ui.eyebrow}>Pierwszy krok</p>
-          <h2 className={ui.sectionTitle}>Product Clarity Sprint</h2>
-        </div>
-        <p className={ui.sectionIntroLight}>
-          W 7 dni zamieniamy niejasny problem w decyzję, którą da się obronić biznesowo. Bez
-          prototypu na pokaz i bez założenia, że każda sytuacja potrzebuje dedykowanego systemu.
+    <section className={ui.sprintSection} id="sprint" aria-labelledby="sprint-title">
+      <ScrollReveal className={ui.sprintHeading} crop>
+        <p className={ui.eyebrow}>Jak zaczynamy</p>
+        <h2 className={ui.sprintTitle} id="sprint-title">
+          Zanim zainwestujesz w pełne wdrożenie, ustalamy, co naprawdę ma sens.
+        </h2>
+      </ScrollReveal>
+      <ScrollReveal className={ui.sprintOffer} direction="left">
+        <p className={ui.sprintLead}>
+          W 7 dni sprawdzam, gdzie firma traci czas, czego potrzebują klienci i jaki najmniejszy
+          zakres rozwiąże problem. Jeśli wystarczy gotowe narzędzie albo zmiana sposobu pracy,
+          powiem to wprost.
         </p>
-      </Reveal>
-      <div className={ui.processGrid}>
-        {sprintSteps.map((step, index) => (
-          <Reveal
-            className={`${ui.processStep} ${index > 0 ? ui.processStepInset : ''} ${index === sprintSteps.length - 1 ? ui.processStepLast : ''}`}
-            delay={index * 0.06}
-            key={step.number}
-          >
-            <span className={ui.utilityLabel}>{step.number}</span>
-            <h3 className={ui.processTitle}>{step.title}</h3>
-            <p className={ui.processCopy}>{step.description}</p>
-          </Reveal>
-        ))}
-      </div>
-      <div className={ui.offerGrid}>
-        <Reveal className={ui.pricePanel}>
-          <p className={ui.priceLabel}>Stała cena sprintu</p>
-          <p className={ui.price}>9 000</p>
-          <p className={ui.priceMeta}>PLN netto + VAT</p>
-          <div className={ui.durationRow}>
-            <span className={ui.durationLabel}>czas</span>
-            <strong>7 dni roboczych</strong>
-          </div>
-        </Reveal>
-        <Reveal className={ui.deliverablesPanel} delay={0.05}>
-          <p className={ui.utilityLabel}>Po tygodniu masz</p>
-          <ul className={ui.deliverablesList}>
-            {deliverables.map((deliverable) => (
-              <li className={ui.deliverable} key={deliverable}>
-                <span className={ui.deliverableMark}>+</span>
-                {deliverable}
-              </li>
-            ))}
-          </ul>
-          <p className={ui.scopeNote}>
-            <strong>Nie każdy problem powinien kończyć się wdrożeniem.</strong> Jeśli nie warto
-            budować albo nie jestem właściwą osobą, powiem to wprost.
-          </p>
-        </Reveal>
-      </div>
-      <Reveal className={ui.conversion}>
-        <div className={ui.conversionProof}>
-          <p className={ui.conversionProofLabel}>Dowiezione w praktyce</p>
-          <strong className={ui.conversionMetric}>Produkt w App Store</strong>
-          <strong className={ui.conversionMetric}>Platforma na produkcji</strong>
-          <span className={ui.conversionProofNote}>
-            Fenne jest w App Store. Better Off działa na produkcji.
-          </span>
+        <div className={ui.priceBlock}>
+          <strong className={ui.price}>9 000 PLN</strong>
+          <span className={ui.priceMeta}>netto + VAT · 7 dni roboczych</span>
         </div>
-        <div className={ui.conversionAction}>
-          <h3 className={ui.conversionTitle}>Masz podobny kosztowny problem?</h3>
-          <p className={ui.conversionCopy}>
-            Wystarczą trzy zdania: co robicie ręcznie, kto czeka i jak często problem wraca.
-          </p>
-          <motion.a
-            className={`${ui.primaryCtaBase} ${ui.primaryCtaDark}`}
-            href={EMAIL_LINK}
-            whileHover={{ y: -3 }}
-            whileTap={{ scale: 0.98 }}
-            transition={{ type: 'spring', stiffness: 420, damping: 30 }}
-          >
-            Napisz trzy zdania
-            <ArrowIcon />
-          </motion.a>
-          <ContactFallback />
-          <p className={ui.directWorkNote}>
-            Pracujesz bezpośrednio ze mną — od pierwszej rozmowy po decyzję i wdrożenie.
-          </p>
-        </div>
-      </Reveal>
+      </ScrollReveal>
+      <ScrollReveal className={ui.sprintResult} direction="right" delay={0.08}>
+        <h3 className={ui.resultTitle}>Po tygodniu dostajesz:</h3>
+        <ul className={ui.resultList}>
+          {sprintOutcomes.map((outcome) => (
+            <li className={ui.resultItem} key={outcome}>
+              {outcome}
+            </li>
+          ))}
+        </ul>
+        <p className={ui.honestyNote}>
+          Przed większą inwestycją wiesz, co budować, czego nie budować i ile może kosztować
+          wdrożenie.
+        </p>
+        <a className={ui.secondaryCta} href={EMAIL_LINK}>
+          Opisz, co robicie ręcznie
+          <ArrowIcon />
+        </a>
+      </ScrollReveal>
     </section>
   );
 }
 
-function BuildSection() {
+function WorkSection() {
   return (
-    <section className={ui.sectionPaper} id="wdrozenie">
-      <Reveal className={ui.sectionHeading}>
+    <section className={ui.workSection} id="realizacje" aria-labelledby="work-title">
+      <ScrollReveal className={ui.workHeading} crop>
         <div>
-          <p className={ui.eyebrow}>Pełne wdrożenie</p>
-          <h2 className={ui.sectionTitle}>Od decyzji do działającego produktu.</h2>
+          <h2 className={ui.workTitle} id="work-title">
+            Zobacz, co już działa.
+          </h2>
         </div>
-        <p className={ui.sectionIntro}>
-          Jeśli sprint pokaże, że budowa ma sens, mogę przejąć całość: od technicznego planu po
-          uruchomienie. Dostajesz jednego partnera odpowiedzialnego za działający efekt, nie paczkę
-          ekranów i repozytorium bez właściciela.
+        <p className={ui.workLead}>
+          Własna aplikacja mobilna, rozwój platformy i strona usługowa. Kliknij projekt, aby
+          zobaczyć go na żywo.
         </p>
-      </Reveal>
-      <Reveal className={ui.buildPackage}>
-        <div className={ui.buildPackagePitch}>
-          <p className={ui.utilityLabel}>Custom build · web lub mobile</p>
-          <h3 className={ui.buildPackageTitle}>Buduję cały produkt. Nie tylko pierwszy ekran.</h3>
-          <p className={ui.buildPackageCopy}>
-            Cenę, etapy i termin ustalamy po sprincie, kiedy znamy prawdziwy zakres i ryzyka. Każdy
-            etap kończy się czymś, co można uruchomić, sprawdzić i świadomie rozwijać dalej.
-          </p>
-          <motion.a
-            className={`${ui.primaryCtaBase} ${ui.primaryCtaLime}`}
-            href={EMAIL_LINK}
-            whileHover={{ y: -3 }}
-            whileTap={{ scale: 0.98 }}
-            transition={{ type: 'spring', stiffness: 420, damping: 30 }}
-          >
-            Zapytaj o pełne wdrożenie
-            <ArrowIcon />
-          </motion.a>
-        </div>
-        <div className={ui.buildPackageScope}>
-          <p className={ui.utilityLabel}>W pakiecie</p>
-          <ul className={ui.buildPackageList}>
-            {fullBuildIncludes.map((item, index) => (
-              <li className={ui.buildPackageItem} key={item}>
-                <span>0{index + 1}</span>
-                {item}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </Reveal>
-      <Reveal className={ui.buildExamplesHeading}>
-        <p className={ui.utilityLabel}>Przykładowe rozwiązania</p>
-        <p>Technologia wynika z procesu, nie odwrotnie.</p>
-      </Reveal>
-      <div className={ui.buildGrid}>
-        {buildOptions.map((option, index) => (
-          <Reveal className={ui.buildCard} delay={index * 0.06} key={option.title}>
-            <span className={ui.buildIndex}>0{index + 1}</span>
-            <h3 className={ui.buildTitle}>{option.title}</h3>
-            <p className={ui.buildCopy}>{option.description}</p>
-          </Reveal>
-        ))}
-      </div>
-      <Reveal className={ui.buildNote}>
-        <strong className={ui.buildNoteStrong}>Pełne wdrożenie, ale bez pompowania zakresu.</strong>
-        <span className={ui.buildNoteCopy}>
-          Najpierw uruchamiamy najmniejszą wersję, która rozwiązuje kosztowny problem. Kolejne
-          elementy dokładamy dopiero wtedy, gdy produkt udowodni ich sens.
-        </span>
-      </Reveal>
-    </section>
-  );
-}
-
-function CasesSection() {
-  const reduce = useReducedMotion();
-  return (
-    <section className={ui.casesSection} id="realizacje">
-      <Reveal className={ui.sectionHeading}>
-        <div>
-          <p className={ui.eyebrow}>Dowód zamiast deklaracji</p>
-          <h2 className={ui.sectionTitle}>Buduję rzeczy, których ludzie naprawdę używają.</h2>
-        </div>
-        <p className={ui.sectionIntro}>
-          Od złożonej platformy produktowej, przez własną aplikację w App Store, po prosty i
-          skuteczny web. Dobieram poziom rozwiązania do problemu.
-        </p>
-      </Reveal>
-      <div className={ui.casesGrid}>
-        {cases.map((project, index) => (
-          <Reveal
-            className={index === 0 ? ui.caseWrapFeatured : ''}
-            delay={index * 0.05}
+      </ScrollReveal>
+      <div className={ui.workList}>
+        {projects.map((project, index) => (
+          <ScrollReveal
+            className={ui.workReveal}
+            direction={project.reverse ? 'right' : 'left'}
+            delay={index === 0 ? 0 : 0.04}
+            amount={0.16}
+            crop
             key={project.name}
           >
-            <motion.a
-              className={`${ui.caseCard} ${index === 0 ? ui.caseCardFeatured : ui.caseCardRegular}`}
+            <a
+              className={`${ui.workProject} ${project.featured ? ui.workProjectFeatured : ''} ${project.reverse ? ui.workProjectReverse : ''}`}
               href={project.href}
               target="_blank"
               rel="noreferrer"
-              whileHover={reduce ? undefined : { y: -5 }}
-              transition={{ type: 'spring', stiffness: 360, damping: 32 }}
+              aria-label={`${project.name}. Otwórz projekt w nowej karcie`}
             >
-              <div className={ui.caseTopline}>
-                <span>{project.type}</span>
-                <ExternalArrow />
+              <div className={`${ui.workBody} ${project.reverse ? ui.workBodyReverse : ''}`}>
+                <span className={ui.workType}>{project.type.replace(' · ', ' / ')}</span>
+                <strong className={ui.workName}>{project.name}</strong>
+                <span className={ui.workCopy}>{project.copy}</span>
+                <span className={ui.workLink}>
+                  Zobacz na żywo
+                  <ArrowIcon external />
+                </span>
               </div>
-              <h3 className={ui.caseTitle}>{project.name}</h3>
-              <p
-                className={`${ui.caseCopy} ${index === 0 ? ui.caseCopyFeatured : ui.caseCopyRegular}`}
-              >
-                {project.description}
-              </p>
-              <span className={ui.caseLink}>{new URL(project.href).hostname}</span>
-            </motion.a>
-          </Reveal>
+              <div className={`${ui.workVisual} ${project.reverse ? ui.workVisualReverse : ''}`}>
+                <Image
+                  className={ui.workImage}
+                  src={project.image}
+                  alt={project.imageAlt}
+                  fill
+                  sizes="(max-width: 900px) 100vw, 68vw"
+                />
+              </div>
+            </a>
+          </ScrollReveal>
         ))}
       </div>
+    </section>
+  );
+}
+
+function CloseSection({ sectionRef }: { sectionRef: RefObject<HTMLElement | null> }) {
+  return (
+    <section className={ui.closeSection} aria-labelledby="close-title" ref={sectionRef}>
+      <ScrollReveal className={ui.close} crop amount={0.18}>
+        <h2 className={ui.closeTitle} id="close-title">
+          <span className={ui.titleLine}>Masz proces, który</span>
+          <span className={ui.titleLine}>działa tylko dlatego,</span>
+          <span className={ui.titleLine}>że ktoś go pilnuje?</span>
+        </h2>
+        <p className={ui.closeCopy}>
+          Wyślij trzy zdania: co robicie ręcznie, kto na to czeka i jak często problem wraca.
+          Odpowiem, czy warto rozmawiać o własnym systemie.
+        </p>
+        <div className={ui.closeAction}>
+          <a className={ui.darkCta} href={EMAIL_LINK}>
+            Opisz, co robicie ręcznie
+            <ArrowIcon />
+          </a>
+          <ContactFallback onOrange />
+        </div>
+      </ScrollReveal>
     </section>
   );
 }
@@ -530,9 +405,9 @@ function CasesSection() {
 function Footer() {
   return (
     <footer className={ui.footer}>
-      <div className={ui.footerIdentity}>
+      <div>
         <strong className={ui.footerName}>Ilya Dolotov</strong>
-        <span className={ui.footerRole}>Product Engineer</span>
+        <span className={ui.footerRole}>Aplikacje dla firm</span>
       </div>
       <div className={ui.footerLinks}>
         <a
@@ -543,14 +418,6 @@ function Footer() {
         >
           GitHub
         </a>
-        <a
-          className={ui.footerLink}
-          href="https://fenneplanner.com"
-          target="_blank"
-          rel="noreferrer"
-        >
-          Fenne
-        </a>
         <a className={ui.footerLink} href={EMAIL_LINK}>
           E-mail
         </a>
@@ -560,20 +427,69 @@ function Footer() {
   );
 }
 
-export function OfferPage() {
+function MobileStickyAction({ visible }: { visible: boolean }) {
+  const reduceMotion = useReducedMotion();
+
   return (
-    <MotionConfig reducedMotion="user">
-      <div className={ui.viewportFrame}>
-        <main className={ui.siteShell}>
-          <Header />
-          <Hero />
-          <ProblemsSection />
-          <SprintSection />
-          <BuildSection />
-          <CasesSection />
-          <Footer />
-        </main>
-      </div>
-    </MotionConfig>
+    <AnimatePresence initial={false}>
+      {visible ? (
+        <motion.div
+          animate={{ opacity: 1, y: 0 }}
+          className={ui.mobileSticky}
+          exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 20 }}
+          initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 20 }}
+          transition={{ duration: reduceMotion ? 0 : 0.2, ease: 'easeOut' }}
+        >
+          <a className={ui.mobileStickyLink} href={EMAIL_LINK}>
+            Opisz ręczną pracę
+            <ArrowIcon />
+          </a>
+        </motion.div>
+      ) : null}
+    </AnimatePresence>
+  );
+}
+
+function useObservedElement(elementRef: RefObject<HTMLElement | null>, mode: 'past' | 'visible') {
+  const [matches, setMatches] = useState(false);
+
+  useEffect(() => {
+    const element = elementRef.current;
+    if (!element) return;
+
+    const observer = new IntersectionObserver(([entry]) => {
+      setMatches(
+        mode === 'visible'
+          ? entry.isIntersecting
+          : !entry.isIntersecting && entry.boundingClientRect.bottom < 0
+      );
+    });
+
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [elementRef, mode]);
+
+  return matches;
+}
+
+export function OfferPage() {
+  const heroRef = useRef<HTMLElement>(null);
+  const closeRef = useRef<HTMLElement>(null);
+  const heroPassed = useObservedElement(heroRef, 'past');
+  const closeVisible = useObservedElement(closeRef, 'visible');
+
+  return (
+    <div className={ui.viewport}>
+      <main className={`${ui.shell} ${ui.mobileSafeArea}`}>
+        <Header />
+        <Hero sectionRef={heroRef} />
+        <FullBuildSection />
+        <SprintSection />
+        <WorkSection />
+        <CloseSection sectionRef={closeRef} />
+        <Footer />
+      </main>
+      <MobileStickyAction visible={heroPassed && !closeVisible} />
+    </div>
   );
 }

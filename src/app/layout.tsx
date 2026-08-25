@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
+import { Barlow_Condensed, Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 
 const geistSans = Geist({
@@ -12,10 +12,16 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 });
 
+const barlowCondensed = Barlow_Condensed({
+  variable: '--font-barlow-condensed',
+  subsets: ['latin', 'latin-ext'],
+  weight: ['600', '700', '800'],
+});
+
 export const metadata: Metadata = {
-  title: 'Ilya Dolotov — dedykowane aplikacje dla firm',
+  title: 'Ilya Dolotov: aplikacje webowe i mobilne dla firm',
   description:
-    'Buduję aplikacje webowe i mobilne, które usuwają ręczną pracę z procesów działających firm.',
+    'Aplikacje dla firm, które chcą zastąpić ręczne pilnowanie zamówień, klientów i wewnętrznych procesów.',
 };
 
 export const viewport: Viewport = {
@@ -30,7 +36,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pl">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>{children}</body>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} ${barlowCondensed.variable} antialiased`}
+        data-design-contract="997c71b1"
+      >
+        {children}
+      </body>
     </html>
   );
 }
