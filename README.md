@@ -6,7 +6,7 @@
 
 ---
 
-A single placeholder page (noindex) until the real site exists. The previous offer landing page is preserved at the `archive/offer-landing-2026-11-12` tag.
+A single placeholder page (noindex) until the real site exists.
 
 ## Stack
 
