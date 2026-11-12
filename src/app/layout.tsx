@@ -1,10 +1,10 @@
 import type { Metadata, Viewport } from 'next';
-import { Barlow_Condensed, Geist, Geist_Mono } from 'next/font/google';
+import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
-  subsets: ['latin'],
+  subsets: ['latin', 'latin-ext'],
 });
 
 const geistMono = Geist_Mono({
@@ -12,21 +12,16 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 });
 
-const barlowCondensed = Barlow_Condensed({
-  variable: '--font-barlow-condensed',
-  subsets: ['latin', 'latin-ext'],
-  weight: ['600', '700', '800'],
-});
-
 export const metadata: Metadata = {
-  title: 'Ilya Dolotov: aplikacje webowe i mobilne dla firm',
-  description:
-    'Aplikacje dla firm, które chcą zastąpić ręczne pilnowanie zamówień, klientów i wewnętrznych procesów.',
+  title: 'Ilya Dolotov',
+  description: 'The personal site of Ilya Dolotov. Coming soon.',
+  robots: { index: false, follow: false },
 };
 
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
+  themeColor: '#0a1813',
 };
 
 export default function RootLayout({
@@ -35,11 +30,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pl">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} ${barlowCondensed.variable} antialiased`}
-        data-design-contract="997c71b1"
-      >
+    <html lang="en">
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         {children}
       </body>
     </html>

@@ -1,19 +1,16 @@
 <div align="center">
   <img src="src/app/icon.svg" width="64" height="64" alt="snacksncode logo" />
   <h1><a href="https://snacksncode.dev">snacksncode.dev</a></h1>
-  <p>Product-engineering offer by Ilya Dolotov.</p>
+  <p>Personal site of Ilya Dolotov. Coming soon.</p>
 </div>
 
 ---
 
+A single placeholder page (noindex) until the real site exists. The previous offer landing page is preserved at the `archive/offer-landing-2026-11-12` tag.
+
 ## Stack
 
-- **Framework** — [Next.js 16](https://nextjs.org)
-- **Language** — [TypeScript 5.9](https://typescriptlang.org)
-- **Styling** — [Tailwind CSS 4.2](https://tailwindcss.com)
-- **Motion** — [Motion for React](https://motion.dev/docs/react) for the mobile CTA state transition
-- **Fonts** — Geist for body copy and Barlow Condensed for display type
-- **Runtime** — [Bun](https://bun.sh)
+Next.js 16, TypeScript, Tailwind CSS 4, Bun. Deployed on Vercel.
 
 ## Dev
 
@@ -21,5 +18,3 @@
 bun install
 bun run dev
 ```
-
-Open [localhost:3000](http://localhost:3000).
