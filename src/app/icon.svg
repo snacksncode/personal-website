@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <rect width="32" height="32" rx="5" ry="5" fill="#0d1f18"/>
+  <rect width="32" height="32" rx="7" ry="7" fill="#202329"/>
   <text
     x="50%"
     y="50%"
@@ -9,6 +9,6 @@
     font-size="17"
     font-weight="800"
     letter-spacing="-1"
-    fill="#ff6848"
+    fill="#ff806b"
   >ID</text>
 </svg>
